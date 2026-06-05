@@ -71,7 +71,7 @@ default = []
 [dependencies]
 # The shared iQDB vocabulary: VectorId, Metadata, Hit, SearchParams, DistanceMetric,
 # and the IqdbError domain error. This is the crate's only dependency.
-iqdb-types = { path = "../iqdb-types", version = "1.0.0" }
+iqdb-types = "1.0.0"
 
 
 # DEV DEPENDENCIES
