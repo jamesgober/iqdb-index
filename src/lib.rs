@@ -32,6 +32,30 @@
 //! every index MUST negate it at the boundary — store `-dot` in
 //! `Hit.distance` — to keep one ordering invariant across the index family.
 //!
+//! ## Synchronous by design
+//!
+//! The trait is **synchronous**: `search`, `insert`, and the rest return
+//! [`Result`](iqdb_types::Result), not futures. This is a deliberate, frozen
+//! decision, for three reasons:
+//!
+//! 1. **Object safety on the hot path.** [`IndexCore`] must be
+//!    `dyn`-compatible so the engine can hold `Box<dyn IndexCore>`. An
+//!    `async fn` in the trait is not `dyn`-compatible without boxing the
+//!    returned future, which would put a heap allocation on every `search`
+//!    call — unacceptable for the query hot path.
+//! 2. **The work is CPU-bound.** A nearest-neighbour search is an in-memory
+//!    scan or graph walk, not I/O. Wrapping CPU-bound work in a future buys
+//!    nothing and costs a state machine.
+//! 3. **Async belongs at the engine boundary, not the index.** The engine
+//!    already guards each index with an `RwLock`; if it wants an async API
+//!    edge, it offloads the blocking call (for example via
+//!    `spawn_blocking`). That keeps the index contract simple and leaves the
+//!    runtime choice to the engine.
+//!
+//! There is therefore no async trait, no `async` feature, and no `futures`
+//! dependency. Async is optional *wrapping* by a consumer, not part of this
+//! crate's surface.
+//!
 //! ## Example
 //!
 //! ```

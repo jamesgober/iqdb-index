@@ -1,6 +1,6 @@
 # iqdb-index &mdash; API Reference
 
-> Complete reference for **every** public item in `iqdb-index` as of **v0.3.0**:
+> Complete reference for **every** public item in `iqdb-index` as of **v0.4.0**:
 > what it is, its parameters and return shape, the contract it carries, and
 > worked examples for each use case.
 >
@@ -411,6 +411,26 @@ locking.
 
 ---
 
+## Synchronous by design
+
+The trait is **synchronous** — every method returns `Result<T>`, not a future
+— and that is a frozen decision (as of v0.4.0), for three reasons:
+
+1. **Object safety on the hot path.** `IndexCore` must stay `dyn`-compatible so
+   the engine can hold `Box<dyn IndexCore>`. An `async fn` in the trait is not
+   `dyn`-compatible without boxing the returned future — a heap allocation on
+   every `search`, which the query hot path cannot afford.
+2. **The work is CPU-bound.** A nearest-neighbour search is an in-memory scan
+   or graph walk, not I/O; a future buys nothing and costs a state machine.
+3. **Async belongs at the engine boundary.** The engine already guards each
+   index with an `RwLock` and can offload a blocking call (e.g. via
+   `spawn_blocking`) if it wants an async API edge.
+
+There is no async trait, no `async` feature, and no `futures` dependency. Async
+is optional *wrapping* by a consumer, not part of this crate's surface.
+
+---
+
 ## Errors
 
 Every fallible method returns [`iqdb_types::Result<T>`](iqdb_types::Result),
@@ -434,6 +454,13 @@ crate's contract refers to:
 `iqdb-index` has **no** feature flags. It is a pure, std-only trait crate with a
 single dependency ([`iqdb-types`](https://docs.rs/iqdb-types)); there is nothing
 to gate. The default build is the whole surface.
+
+**Feature freeze (v0.4.0):** the feature set is frozen at *empty*. There is no
+`std`/`no_std` split (the trait uses `std::sync::Arc` and
+`std::collections::HashMap`), no `serde` gate (the surface is behaviour, not
+data to serialize), and no `async` gate (see [Synchronous by
+design](#synchronous-by-design)). Any feature added in the 1.x series would be
+purely additive.
 
 ---
 

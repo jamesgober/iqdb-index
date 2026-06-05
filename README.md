@@ -51,7 +51,7 @@
 
 ```toml
 [dependencies]
-iqdb-index = "0.3"
+iqdb-index = "0.4"
 ```
 
 <br>
@@ -95,7 +95,7 @@ assert_eq!(engine[0].len(), 2);
 
 ## Status
 
-<code>v0.3.0</code> &mdash; the trait surface, validated against the real index families. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented, documented with runnable examples, and property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The surface is cross-checked against the live `iqdb-flat` (brute-force), `iqdb-hnsw` (graph), and `iqdb-ivf` (clustered) implementations — each implements the traits verbatim with its own `Config` — and a consumer-simulation suite proves all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). No API change was needed. Remaining 0.x work — the async decision and the API freeze — is tracked in the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
+<code>v0.4.0</code> &mdash; trait surface complete, validated against the real index families, and the design commitments locked. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented, documented with runnable examples, and property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The surface is cross-checked against the live `iqdb-flat` (brute-force), `iqdb-hnsw` (graph), and `iqdb-ivf` (clustered) implementations — each implements the traits verbatim with its own `Config` — with a consumer-simulation suite proving all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). The trait is **synchronous by design** (no async trait/feature) and the **feature set is frozen** at empty. Only the API freeze remains before 1.0; see the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
 
 <hr>
 <br>

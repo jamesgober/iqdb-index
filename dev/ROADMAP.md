@@ -42,10 +42,16 @@ Exit criteria:
 
 ---
 
-## v0.4.0 -- async decision (sync default) + feature freeze
+## v0.4.0 -- async decision (sync default) + feature freeze (DONE)
+
+Recorded the **synchronous-by-design** decision (no async trait, no `async`
+feature, no `futures` dep) — async would break `IndexCore` object safety
+without per-call future boxing, search is CPU-bound, and async belongs at the
+engine boundary. Declared the feature set frozen at empty.
 
 Exit criteria:
-- [ ] No `todo!`/`unimplemented!`. Feature freeze declared.
+- [x] No `todo!`/`unimplemented!` (the crate has none; `#![forbid(unsafe_code)]`).
+- [x] Feature freeze declared (empty feature set, recorded in API.md + CHANGELOG).
 
 ---
 

@@ -21,6 +21,20 @@
 
 ---
 
+## [0.4.0] - 2026-06-05
+
+The async decision and the feature freeze. No code or public-surface changes — this milestone records two design commitments ahead of the API freeze.
+
+### Added
+
+- Documented the **synchronous-by-design** decision in the crate docs and `docs/API.md`: the trait stays sync (no async trait, no `async` feature, no `futures` dependency) because (1) an `async fn` would break `IndexCore` object safety without per-call future boxing on the search hot path, (2) search is CPU-bound, and (3) async belongs at the engine boundary (`spawn_blocking`), not the index. Async is optional consumer-side wrapping.
+
+### Changed
+
+- Declared the **feature set frozen** at empty: no `std`/`no_std` split, no `serde` gate, no `async` gate. Any 1.x feature would be purely additive.
+
+---
+
 ## [0.3.0] - 2026-06-05
 
 Trait validated against the real index families. No API changes — the v0.2.0 surface proved sufficient for graph, clustered, and brute-force indexes alike.
@@ -69,6 +83,7 @@ Initial scaffold and repository bootstrap. No domain logic yet &mdash; this rele
 - `REPS.md` compliance baseline.
 - `.github/workflows/ci.yml` CI matrix; `deny.toml`, `clippy.toml`, `rustfmt.toml`.
 - `dev/DIRECTIVES.md` and `dev/ROADMAP.md` (committed engineering standards + plan).
-[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/jamesgober/iqdb-index/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jamesgober/iqdb-index/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jamesgober/iqdb-index/releases/tag/v0.2.0
