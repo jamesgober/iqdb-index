@@ -1,6 +1,6 @@
 # iqdb-index &mdash; API Reference
 
-> Complete reference for **every** public item in `iqdb-index` as of **v0.2.0**:
+> Complete reference for **every** public item in `iqdb-index` as of **v0.3.0**:
 > what it is, its parameters and return shape, the contract it carries, and
 > worked examples for each use case.
 >
@@ -444,6 +444,25 @@ to gate. The default build is the whole surface.
 | [`IndexCore`](#indexcore) | trait | ✅ (`Box<dyn IndexCore>`) | `Send + Sync` |
 | [`Index`](#index) | trait | — (by design) | `Index: IndexCore`, `Config: Default + Clone` |
 | [`IndexStats`](#indexstats) | struct | n/a | `Debug + Clone + Default + PartialEq + Eq` |
+
+---
+
+## Validation
+
+As of v0.3.0 the surface is cross-checked against the three real consumers, each
+of which implements `IndexCore` + `Index` verbatim with its own associated
+`Config`:
+
+| Crate | Type | `Config` | Family |
+|---|---|---|---|
+| `iqdb-flat` | `FlatIndex` | `FlatConfig` (unit) | brute-force |
+| `iqdb-hnsw` | `HnswIndex` | `HnswConfig { m, ef_construction }` | graph |
+| `iqdb-ivf` | `IvfIndex` | `IvfConfig { n_clusters, n_probes }` | clustered |
+
+`tests/consumer_simulation.rs` encodes a stand-in for each at its exact
+construction shape and proves all three coexist behind `Box<dyn IndexCore>` —
+DIRECTIVES §8 (graph, clustered, and brute-force fit without awkward
+abstractions). No trait change was required to carry them.
 
 ---
 

@@ -21,6 +21,20 @@
 
 ---
 
+## [0.3.0] - 2026-06-05
+
+Trait validated against the real index families. No API changes — the v0.2.0 surface proved sufficient for graph, clustered, and brute-force indexes alike.
+
+### Added
+
+- `tests/consumer_simulation.rs` — a stand-in for each real consumer at its exact construction shape (`iqdb-flat` `FlatConfig`, `iqdb-hnsw` `HnswConfig { m, ef_construction }`, `iqdb-ivf` `IvfConfig { n_clusters, n_probes }`), proving DIRECTIVES §8: the trait is implementable by graph, clustered, and brute-force indexes without awkward abstractions, and all three coexist behind `Box<dyn IndexCore>`.
+
+### Changed
+
+- Documented the validation outcome in the README and `docs/API.md`: cross-checked against the live `iqdb-flat` / `iqdb-hnsw` / `iqdb-ivf` implementations (each implements `IndexCore` + `Index` verbatim, carries its own `Config`, reports `extra: None`, and overrides `is_empty`); no trait change was required.
+
+---
+
 ## [0.2.0] - 2026-06-05
 
 The load-bearing trait surface. Turns the scaffold into the contract every iQDB index implements.
@@ -55,5 +69,6 @@ Initial scaffold and repository bootstrap. No domain logic yet &mdash; this rele
 - `REPS.md` compliance baseline.
 - `.github/workflows/ci.yml` CI matrix; `deny.toml`, `clippy.toml`, `rustfmt.toml`.
 - `dev/DIRECTIVES.md` and `dev/ROADMAP.md` (committed engineering standards + plan).
-[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/jamesgober/iqdb-index/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jamesgober/iqdb-index/releases/tag/v0.2.0

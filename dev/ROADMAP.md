@@ -28,10 +28,17 @@ Exit criteria:
 
 ---
 
-## v0.3.0 -- validate against `iqdb-flat`; refine the trait
+## v0.3.0 -- validate against `iqdb-flat`; refine the trait (DONE)
+
+Cross-checked the surface against the live `iqdb-flat` (brute-force),
+`iqdb-hnsw` (graph), and `iqdb-ivf` (clustered) implementations — each
+implements `IndexCore` + `Index` verbatim with its own `Config`. Encoded a
+consumer-simulation proving all three families fit and coexist behind
+`Box<dyn IndexCore>` (§8). No trait change was required.
 
 Exit criteria:
-- [ ] New surface tested and benchmarked where it is a hot path.
+- [x] New surface tested (consumer-simulation across all three families).
+- [x] Hot path: the crate is pure interface code with no hot path of its own (the default batch shims are O(n) dispatch wrappers); nothing to benchmark here. A consumer's search hot path is benchmarked in that consumer's crate.
 
 ---
 
