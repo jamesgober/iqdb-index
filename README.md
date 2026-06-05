@@ -51,7 +51,7 @@
 
 ```toml
 [dependencies]
-iqdb-index = "0.4"
+iqdb-index = "0.5"
 ```
 
 <br>
@@ -93,9 +93,22 @@ assert_eq!(engine[0].len(), 2);
 
 <br>
 
+## Examples
+
+Runnable, each covering a distinct facet of the surface (`cargo run --example <name>`):
+
+| Example | Shows |
+|---|---|
+| [`custom_index`](./examples/custom_index.rs) | Implement `IndexCore` + `Index` by hand — the Tier-3 seam. |
+| [`polymorphic_engine`](./examples/polymorphic_engine.rs) | Hold several index kinds as `Box<dyn IndexCore>` and dispatch over them. |
+| [`dot_product_ordering`](./examples/dot_product_ordering.rs) | The `DotProduct` negation contract — store `-dot` so "most similar" sorts first. |
+| [`batch_and_stats`](./examples/batch_and_stats.rs) | The default `insert_batch` / `search_batch` shims and `IndexStats::extra`. |
+
+<br>
+
 ## Status
 
-<code>v0.4.0</code> &mdash; trait surface complete, validated against the real index families, and the design commitments locked. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented, documented with runnable examples, and property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The surface is cross-checked against the live `iqdb-flat` (brute-force), `iqdb-hnsw` (graph), and `iqdb-ivf` (clustered) implementations — each implements the traits verbatim with its own `Config` — with a consumer-simulation suite proving all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). The trait is **synchronous by design** (no async trait/feature) and the **feature set is frozen** at empty. Only the API freeze remains before 1.0; see the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
+<code>v0.5.0</code> &mdash; **API frozen.** The public surface is locked for the 1.x series (recorded in the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>); only additive, non-breaking changes until 2.0. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented, documented with runnable examples, and property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The surface is validated against the live `iqdb-flat` (brute-force, true removal), `iqdb-hnsw` (graph, tombstone), and `iqdb-ivf` (clustered, true removal) implementations, each carrying its own `Config`, with a consumer-simulation proving all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). Synchronous by design; empty, frozen feature set; `cargo audit` + `cargo deny` clean. The 0.6&ndash;0.9 RC track and 1.0 are gated on integration against the live consumer crates. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
 
 <hr>
 <br>

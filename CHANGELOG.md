@@ -21,6 +21,21 @@
 
 ---
 
+## [0.5.0] - 2026-06-05
+
+The API freeze. The public surface is locked for the 1.x series; per-implementation deletion semantics are recorded.
+
+### Added
+
+- Per-implementation deletion semantics in `docs/API.md`: `iqdb-flat` and `iqdb-ivf` reclaim storage (true removal via `swap_remove`); `iqdb-hnsw` tombstones (node retained for graph connectivity, never returned by `search`). All three satisfy the trait's observable deletion contract.
+- The **frozen public API surface** recorded in `dev/ROADMAP.md` (the `IndexCore` required/provided methods, `Index` + associated `Config`, `IndexStats` fields, empty feature set), with the deliberate freeze decisions (the `IndexCore`/`Index` split, sync-by-design, `Arc<[f32]>` payload, `IndexStats` not `#[non_exhaustive]`).
+
+### Changed
+
+- **Public API frozen for 1.x.** Only additive, non-breaking changes (new provided trait methods with defaults, new public items) are allowed until 2.0. `cargo audit` and `cargo deny check` are clean.
+
+---
+
 ## [0.4.0] - 2026-06-05
 
 The async decision and the feature freeze. No code or public-surface changes — this milestone records two design commitments ahead of the API freeze.
@@ -83,7 +98,8 @@ Initial scaffold and repository bootstrap. No domain logic yet &mdash; this rele
 - `REPS.md` compliance baseline.
 - `.github/workflows/ci.yml` CI matrix; `deny.toml`, `clippy.toml`, `rustfmt.toml`.
 - `dev/DIRECTIVES.md` and `dev/ROADMAP.md` (committed engineering standards + plan).
-[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/jamesgober/iqdb-index/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/jamesgober/iqdb-index/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jamesgober/iqdb-index/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jamesgober/iqdb-index/releases/tag/v0.2.0

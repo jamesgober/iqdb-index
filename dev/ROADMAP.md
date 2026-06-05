@@ -55,10 +55,36 @@ Exit criteria:
 
 ---
 
-## v0.5.0 -- doc the deletion semantics per impl + API freeze
+## v0.5.0 -- doc the deletion semantics per impl + API freeze (DONE)
+
+Recorded each consumer's deletion mechanism against the trait's deletion
+contract (`docs/API.md`): `iqdb-flat` and `iqdb-ivf` reclaim storage (true
+removal via `swap_remove`); `iqdb-hnsw` tombstones (node retained for graph
+connectivity, never returned by `search`). All three honour the same observable
+contract — proof that specifying behaviour, not mechanism, was correct.
 
 Exit criteria:
-- [ ] Public API frozen (recorded here). `cargo audit` + `cargo deny` clean.
+- [x] Public API frozen (recorded below). `cargo audit` + `cargo deny` clean.
+
+### Frozen public API (1.x) — recorded at v0.5.0
+
+The following surface is frozen for the 1.x series. Additive, non-breaking
+changes (new provided trait methods with defaults, new public items) remain
+allowed; anything else waits for 2.0.
+
+- **Constants:** `VERSION: &str`.
+- **`IndexCore`** (object-safe; supertrait bound `Send + Sync`):
+  - required: `insert(&mut self, VectorId, Arc<[f32]>, Option<Metadata>) -> Result<()>`, `delete(&mut self, &VectorId) -> Result<()>`, `search(&self, &[f32], &SearchParams) -> Result<Vec<Hit>>`, `len(&self) -> usize`, `dim(&self) -> usize`, `metric(&self) -> DistanceMetric`, `flush(&mut self) -> Result<()>`, `stats(&self) -> IndexStats`.
+  - provided (overridable): `insert_batch(Vec<(VectorId, Arc<[f32]>, Option<Metadata>)>) -> Result<()>`, `search_batch(&[&[f32]], &SearchParams) -> Result<Vec<Vec<Hit>>>`, `is_empty(&self) -> bool`.
+- **`Index`** (`Index: IndexCore`, not object-safe): associated `type Config: Default + Clone`; `new(dim: usize, metric: DistanceMetric, config: Self::Config) -> Result<Self> where Self: Sized`.
+- **`IndexStats`** (public fields): `n_vectors: usize`, `memory_bytes: usize`, `disk_bytes: Option<usize>`, `index_type: &'static str`, `extra: Option<HashMap<String, String>>`; derives `Debug + Clone + Default + PartialEq + Eq`.
+- **Features:** none (frozen empty).
+
+Deliberate freeze decisions:
+- The trait is **split** into `IndexCore` (object-safe, held as `Box<dyn IndexCore>`) + `Index` (typed construction). This split is part of the frozen contract.
+- The trait is **synchronous** (no async trait/feature; recorded at v0.4.0).
+- `IndexStats` is a plain struct with public fields, keeping struct-update ergonomics; `extra: Option<HashMap<..>>` so the common `stats()` allocates nothing. It is **not** `#[non_exhaustive]` — adding a field would be breaking, so new per-kind detail goes in `extra`, not new fields.
+- The vector payload crosses the boundary as `Arc<[f32]>` (shared, no copy), not `&[f32]` or `Vec<f32>`.
 
 ---
 

@@ -1,12 +1,13 @@
 # iqdb-index &mdash; API Reference
 
-> Complete reference for **every** public item in `iqdb-index` as of **v0.4.0**:
+> Complete reference for **every** public item in `iqdb-index` as of **v0.5.0**:
 > what it is, its parameters and return shape, the contract it carries, and
 > worked examples for each use case.
 >
-> **Status: pre-1.0.** The public surface is being designed across the 0.x
-> series and frozen at `1.0.0`. Only additive churn is expected from here; any
-> breaking change is called out in the [CHANGELOG](../CHANGELOG.md).
+> **Status: API frozen (v0.5.0).** The public surface is locked for the 1.x
+> series — only additive, non-breaking changes until 2.0. The frozen surface is
+> recorded in [`dev/ROADMAP.md`](../dev/ROADMAP.md). The 0.6–0.9 RC track and 1.0
+> are gated on integration against the live consumer crates.
 
 ## Table of Contents
 
@@ -399,6 +400,23 @@ After `delete(id)`:
 
 An implementation **may** reject re-inserting a deleted id; if it does, it must
 document that and return [`IqdbError::Duplicate`].
+
+#### Per-implementation deletion semantics
+
+The contract fixes the *observable* result; each consumer reaches it differently.
+Recorded here (v0.5.0) for the three real consumers:
+
+| Crate | Mechanism | Storage | `len()` | Notes |
+|---|---|---|---|---|
+| `iqdb-flat` | **true removal** | reclaimed immediately (`swap_remove`) | drops by 1 | order-independent topk, so the swap is safe; re-insert allowed |
+| `iqdb-hnsw` | **tombstone** | retained (node kept for graph connectivity) | drops by 1 (live count) | tombstoned nodes are traversal-only and never returned by `search` |
+| `iqdb-ivf` | **true removal** | reclaimed (`swap_remove` from the cluster's inverted list) | drops by 1 | id removed from its cluster's posting list |
+
+That flat/ivf reclaim while hnsw tombstones — all behind one unchanged contract —
+is exactly why the trait specifies *observable behaviour*, not a storage
+mechanism. A graph index cannot cheaply excise a node without breaking
+connectivity, so it tombstones; a flat or clustered index can drop a row in O(1).
+Both honour "a deleted id never reappears in `search` until re-inserted."
 
 ### Concurrency contract
 
