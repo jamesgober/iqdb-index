@@ -21,6 +21,20 @@
 
 ---
 
+## [1.0.0] - 2026-06-05
+
+First stable release. The public API frozen at 0.5.0 is now committed under SemVer for the 1.x series: no breaking changes until 2.0. Every Definition-of-Done criterion (`dev/DIRECTIVES.md` §7) is satisfied.
+
+### Added
+
+- Edge-case test suite (`tests/edge_cases.rs`): empty-index search, `k` larger than the index, exhaustive deletion, re-insert after delete, empty `insert_batch` / `search_batch`, fail-fast `search_batch`, `IndexStats` defaults and structural equality, double-delete, and `Bytes` `VectorId` round-trip.
+
+### Changed
+
+- **Public API committed under SemVer for 1.x** — frozen until 2.0; additive, non-breaking changes (new provided trait methods with defaults, new public items) remain allowed. No code changed from 0.5.0; 1.0.0 is the stability commitment.
+
+---
+
 ## [0.5.0] - 2026-06-05
 
 The API freeze. The public surface is locked for the 1.x series; per-implementation deletion semantics are recorded.
@@ -98,7 +112,8 @@ Initial scaffold and repository bootstrap. No domain logic yet &mdash; this rele
 - `REPS.md` compliance baseline.
 - `.github/workflows/ci.yml` CI matrix; `deny.toml`, `clippy.toml`, `rustfmt.toml`.
 - `dev/DIRECTIVES.md` and `dev/ROADMAP.md` (committed engineering standards + plan).
-[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/jamesgober/iqdb-index/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/jamesgober/iqdb-index/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/jamesgober/iqdb-index/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/jamesgober/iqdb-index/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jamesgober/iqdb-index/compare/v0.2.0...v0.3.0

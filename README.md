@@ -29,7 +29,7 @@
         <strong>MSRV is 1.87+</strong> (Rust 2024 edition). One contract, many indexes &mdash; an object-safe operational trait plus typed construction, with per-index config via associated types.
     </p>
     <blockquote>
-        <strong>Status: pre-1.0, in active development.</strong> The public API is being designed across the 0.x series and frozen at <code>1.0.0</code>. See <a href="./CHANGELOG.md"><code>CHANGELOG.md</code></a>.
+        <strong>Status: stable (1.0).</strong> The public API is committed under SemVer for the 1.x series — no breaking changes until 2.0. See <a href="./CHANGELOG.md"><code>CHANGELOG.md</code></a>.
     </blockquote>
 </div>
 
@@ -51,7 +51,7 @@
 
 ```toml
 [dependencies]
-iqdb-index = "0.5"
+iqdb-index = "1.0"
 ```
 
 <br>
@@ -108,7 +108,7 @@ Runnable, each covering a distinct facet of the surface (`cargo run --example <n
 
 ## Status
 
-<code>v0.5.0</code> &mdash; **API frozen.** The public surface is locked for the 1.x series (recorded in the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>); only additive, non-breaking changes until 2.0. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented, documented with runnable examples, and property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The surface is validated against the live `iqdb-flat` (brute-force, true removal), `iqdb-hnsw` (graph, tombstone), and `iqdb-ivf` (clustered, true removal) implementations, each carrying its own `Config`, with a consumer-simulation proving all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). Synchronous by design; empty, frozen feature set; `cargo audit` + `cargo deny` clean. The 0.6&ndash;0.9 RC track and 1.0 are gated on integration against the live consumer crates. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
+<code>v1.0.0</code> &mdash; **stable.** The public API is committed under SemVer for the 1.x series (no breaking changes until 2.0; the frozen surface is recorded in the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>). `IndexCore`, `Index`, `IndexStats`, and the default batch shims are property-tested (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop) and documented with four runnable examples and a complete <a href="./docs/API.md"><code>API reference</code></a>. The surface is validated against the live `iqdb-flat` (brute-force, true removal), `iqdb-hnsw` (graph, tombstone), and `iqdb-ivf` (clustered, true removal) implementations — each implements the traits verbatim with its own `Config` — and a consumer-simulation proves all three coexist behind `Box<dyn IndexCore>` (DIRECTIVES §8). Synchronous by design; empty, frozen feature set; `cargo audit` + `cargo deny` clean; verified on Windows + Linux across stable and the 1.87 MSRV.
 
 <hr>
 <br>

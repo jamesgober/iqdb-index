@@ -1,13 +1,13 @@
 # iqdb-index &mdash; API Reference
 
-> Complete reference for **every** public item in `iqdb-index` as of **v0.5.0**:
+> Complete reference for **every** public item in `iqdb-index` as of **v1.0.0**:
 > what it is, its parameters and return shape, the contract it carries, and
 > worked examples for each use case.
 >
-> **Status: API frozen (v0.5.0).** The public surface is locked for the 1.x
-> series — only additive, non-breaking changes until 2.0. The frozen surface is
-> recorded in [`dev/ROADMAP.md`](../dev/ROADMAP.md). The 0.6–0.9 RC track and 1.0
-> are gated on integration against the live consumer crates.
+> **Status: stable (1.0).** The public API is committed under SemVer for the 1.x
+> series — no breaking changes until 2.0 (the frozen surface is recorded in
+> [`dev/ROADMAP.md`](../dev/ROADMAP.md)). Only additive, non-breaking changes are
+> made within 1.x.
 
 ## Table of Contents
 

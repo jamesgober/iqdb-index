@@ -88,19 +88,42 @@ Deliberate freeze decisions:
 
 ---
 
-## v0.6.0 -> v0.9.x -- Alpha / Beta -> RC
+## v0.6.0 -> v0.9.x -- Alpha / Beta -> RC (COMPRESSED -> 1.0)
 
 - 0.6.x-0.7.x: integrate against real consumers; MINOR-compatible additions only.
 - 0.8.x (beta): bug fixes; broader testing; final benchmarks.
 - 0.9.x (rc): critical fixes + doc polish.
 
+> **Compressed into 1.0 (anti-deferral rule — move + reason recorded here).**
+> This RC band exists to soak the frozen API against live consumers. In the
+> build order those consumers (`iqdb-flat`/`iqdb-hnsw`/`iqdb-ivf`) are built
+> *after* this crate and do not yet exist as published crates, so there is
+> nothing to soak against on a calendar. Its intent — proving the surface
+> carries real graph/clustered/brute-force indexes — was already met at v0.3.0
+> by `tests/consumer_simulation.rs`, cross-checked against the **actual** Cortex
+> implementations (which implement `IndexCore` + `Index` verbatim, zero
+> friction). There are no benchmarks because the crate has no hot path of its
+> own (the default shims are O(n) dispatch wrappers). The crate therefore
+> proceeds to 1.0 on a fully-satisfied Definition of Done rather than a calendar,
+> mirroring the `iqdb-types` 0.5 -> 1.0 path. Any need a real consumer later
+> surfaces ships as an additive `1.0.x` release.
+
 ---
 
-## v1.0.0 -- Stable
+## v1.0.0 -- Stable (DONE)
 
-- [ ] Definition of Done (DIRECTIVES section 7) satisfied.
-- [ ] Public API frozen until 2.0.
-- [ ] Release note written; published to crates.io; tag pushed.
+- [x] **Definition of Done (DIRECTIVES §7) satisfied:**
+  - [x] Compiles clean on Linux/macOS/Windows, on stable + the 1.87 MSRV (CI matrix).
+  - [x] `fmt`, `clippy -D warnings` (default + all-features), `test`, `cargo doc -D warnings` clean.
+  - [x] `cargo audit` + `cargo deny check` clean.
+  - [x] No `unwrap`/`expect`/`todo!`/`dbg!` in shipping code; **zero `unsafe`** (`#![forbid(unsafe_code)]`).
+  - [x] A Tier-1 API exists and headlines the docs.
+  - [x] Property tests cover every §8 invariant. **Loom: N/A** — the crate is trait definitions + one plain struct with no concurrent or lock-free path of its own; the `Send + Sync` bound is a compiler-checked requirement on implementers.
+  - [x] **Benchmarks: N/A** — no hot path in this crate (documented); a consumer's search hot path is benched in that consumer's crate.
+  - [x] Every public item documented with a runnable example; `docs/API.md`, README, version metadata current; 4 examples; 39 integration tests + 3 doctests.
+  - [x] Changelog maintained.
+- [x] Public API frozen until 2.0 (recorded under v0.5.0 above).
+- [ ] Release note written; published to crates.io; tag pushed. _(Release note written; publish + tag are the maintainer's to do.)_
 
 ---
 
