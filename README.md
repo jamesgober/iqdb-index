@@ -11,7 +11,7 @@
     <a href="https://crates.io/crates/iqdb-index"><img alt="Downloads" src="https://img.shields.io/crates/d/iqdb-index?color=%230099ff"></a>
     <a href="https://docs.rs/iqdb-index"><img alt="docs.rs" src="https://img.shields.io/docsrs/iqdb-index"></a>
     <a href="https://github.com/jamesgober/iqdb-index/actions"><img alt="CI" src="https://github.com/jamesgober/iqdb-index/actions/workflows/ci.yml/badge.svg"></a>
-    <a href="https://github.com/rust-lang/rfcs/blob/master/text/2495-min-rust-version.md"><img alt="MSRV" src="https://img.shields.io/badge/MSRV-1.85%2B-blue"></a>
+    <a href="https://github.com/rust-lang/rfcs/blob/master/text/2495-min-rust-version.md"><img alt="MSRV" src="https://img.shields.io/badge/MSRV-1.87%2B-blue"></a>
 </div>
 
 <br>
@@ -26,7 +26,7 @@
     <br>
     <hr>
     <p>
-        <strong>MSRV is 1.85+</strong> (Rust 2024 edition). One trait. Many indexes. Per-index config via associated types.
+        <strong>MSRV is 1.87+</strong> (Rust 2024 edition). One contract, many indexes &mdash; an object-safe operational trait plus typed construction, with per-index config via associated types.
     </p>
     <blockquote>
         <strong>Status: pre-1.0, in active development.</strong> The public API is being designed across the 0.x series and frozen at <code>1.0.0</code>. See <a href="./CHANGELOG.md"><code>CHANGELOG.md</code></a>.
@@ -38,12 +38,12 @@
 
 <h2>What it does</h2>
 
-- **`Index` trait** &mdash; the common interface every index implements
-- **Associated `Config`** &mdash; each index exposes its own parameter struct, not a god-config enum
-- **Full operation set** &mdash; insert/insert_batch, delete, search/search_batch, flush, stats
-- **`IndexStats`** &mdash; uniform introspection across index types
-- **Stable by design** &mdash; interface code; breaking changes cascade, so it freezes carefully
-
+- **`IndexCore` trait** &mdash; the object-safe operational surface (`insert`, `delete`, `search`, `len`, `dim`, `metric`, `flush`, `stats`). The engine holds indexes as `Box<dyn IndexCore>`.
+- **`Index` trait** &mdash; typed construction: an associated `Config` and a `new(dim, metric, config)`. Split out from `IndexCore` because a `Self`-returning constructor is not object-safe.
+- **Associated `Config`** &mdash; each index exposes its own parameter struct, not a god-config enum.
+- **Default batch shims** &mdash; `insert_batch` / `search_batch` ship for free and are overridable when a backend has a vectorized fast path.
+- **`IndexStats`** &mdash; uniform, allocation-light introspection across index types.
+- **Documented contracts** &mdash; best-first ordering (with the `DotProduct` negation rule), deletion visibility, and the `Send + Sync` concurrency model live on the trait, so every backend agrees.
 
 <br>
 
@@ -51,14 +51,51 @@
 
 ```toml
 [dependencies]
-iqdb-index = "0.1"
+iqdb-index = "0.2"
 ```
+
+<br>
+
+## Quick Start
+
+Implement the two traits for your index, then construct, insert, and search
+through one uniform surface. The full runnable version is in
+[`examples/custom_index.rs`](./examples/custom_index.rs).
+
+```rust
+use std::sync::Arc;
+use iqdb_index::{Index, IndexCore};
+use iqdb_types::{DistanceMetric, SearchParams, VectorId};
+
+// `FlatIndex` implements `IndexCore` + `Index` (see the example).
+let mut index = FlatIndex::new(3, DistanceMetric::Euclidean, FlatConfig)?;
+
+index.insert_batch(vec![
+    (VectorId::from(1u64), Arc::from([1.0, 0.0, 0.0].as_slice()), None),
+    (VectorId::from(2u64), Arc::from([0.0, 1.0, 0.0].as_slice()), None),
+])?;
+
+let hits = index.search(&[1.0, 0.0, 0.0], &SearchParams::new(1, DistanceMetric::Euclidean))?;
+assert_eq!(hits[0].id, VectorId::U64(1)); // best-first
+
+// Hold any backend behind the object-safe trait:
+let engine: Vec<Box<dyn IndexCore>> = vec![Box::new(index)];
+assert_eq!(engine[0].len(), 2);
+```
+
+### The three tiers
+
+| Tier | Surface | When |
+|---|---|---|
+| **Tier 1** | `Index::new` + the `IndexCore` operations | Build an index and use it. |
+| **Tier 2** | `Index::Config` | Tune a specific backend. |
+| **Tier 3** | implement `IndexCore` + `Index` | Add a new index strategy. |
 
 <br>
 
 ## Status
 
-This is the <code>v0.1.0</code> scaffold: structure, tooling, and quality gates are in place; the implementation lands across the 0.x series per the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a> and <a href="./docs/API.md"><code>docs/API.md</code></a>.
+<code>v0.2.0</code> &mdash; the load-bearing trait surface. `IndexCore`, `Index`, `IndexStats`, and the default batch shims are implemented and documented with runnable examples; the contract is validated by a brute-force reference index across a property-test suite (best-first ordering, deletion visibility, batch&nbsp;==&nbsp;loop). The remaining 0.x work — refining the trait against the real `iqdb-flat` / `iqdb-hnsw` / `iqdb-ivf` consumers, then the API freeze — is tracked in the <a href="./dev/ROADMAP.md"><code>ROADMAP</code></a>. Full surface in <a href="./docs/API.md"><code>docs/API.md</code></a>.
 
 <hr>
 <br>

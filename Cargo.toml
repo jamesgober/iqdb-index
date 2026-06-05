@@ -9,10 +9,10 @@
 #╚═══════════════════════════════╝
 [package]
 name    = "iqdb-index"
-version = "0.1.0"
+version = "0.2.0"
 
 # Minimum Supported Rust Version (MSRV)
-rust-version = "1.85"
+rust-version = "1.87"
 edition = "2024"
 
 # License
@@ -46,7 +46,8 @@ documentation = "https://docs.rs/iqdb-index"
 
 # Authors
 authors = [
-    "James Gober <me@jamesgober.com>"
+    "James Gober <me@jamesgober.com>",
+    "Matt Callahan <matthewcallahan01@icloud.com>"
 ]
 
 [package.metadata.docs.rs]
@@ -61,26 +62,24 @@ path = "src/lib.rs"
 # FEATURE FLAGS
 # #################################
 [features]
-default = ["std"]
-# Standard library.
-std = []
-# Serialization support.
-serde = ["dep:serde"]
+# Default build: the pure trait surface, std-only, no optional dependencies.
+default = []
 
 
 # DEPENDENCIES
 # #################################
 [dependencies]
-serde = { version = "1", optional = true, default-features = false, features = ["derive", "alloc"] }
+# The shared iQDB vocabulary: VectorId, Metadata, Hit, SearchParams, DistanceMetric,
+# and the IqdbError domain error. This is the crate's only dependency.
+iqdb-types = { path = "../iqdb-types", version = "1.0.0" }
 
 
 # DEV DEPENDENCIES
 # #################################
 [dev-dependencies]
+# Property-based coverage of the trait contracts (deletion visibility, best-first
+# ordering, and the batch-equals-loop equivalence) per dev/DIRECTIVES.md §5/§8.
 proptest = "1"
-
-[target.'cfg(loom)'.dev-dependencies]
-loom = "0.7"
 
 
 # RELEASE PROFILE

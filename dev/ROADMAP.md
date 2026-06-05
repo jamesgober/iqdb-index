@@ -15,11 +15,16 @@ Compiles, CI green, structure correct, no domain logic.
 
 ---
 
-## v0.2.0 -- the `Index` trait + `IndexStats` + default batch impls (THE HARD PART, NOT DEFERRED)
+## v0.2.0 -- the `Index` trait + `IndexStats` + default batch impls (THE HARD PART, NOT DEFERRED) (DONE)
+
+Split into `IndexCore` (object-safe operational surface) + `Index` (typed
+construction) so the engine can hold `Box<dyn IndexCore>`. Default
+`insert_batch` / `search_batch` / `is_empty` shims. `IndexStats` with an
+allocation-free `extra` default.
 
 Exit criteria:
-- [ ] Every public item has rustdoc + a runnable example.
-- [ ] Core invariants property-tested.
+- [x] Every public item has rustdoc + a runnable example.
+- [x] Core invariants property-tested (ordering, deletion visibility, batch == loop, cardinality).
 
 ---
 
