@@ -1,6 +1,6 @@
 //! # iqdb-index
 //!
-//! The index-trait layer for the HiveDB **iqdb** vector-database spine. It
+//! The index-trait layer for the **iqdb** vector-database spine. It
 //! defines the shape every concrete index (flat, HNSW, IVF, …) implements so
 //! the engine can hold them polymorphically, and exposes [`IndexStats`] for
 //! runtime introspection. Its only dependency is
